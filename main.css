@@ -36,3 +36,9 @@ form input{
     border-color: rgb(83, 175, 19);
     font-size: 1em;
 }
+.hit{
+    background: url("game_resourse/ship.png") no-repeat center center;
+}
+.miss{
+    background: url("game_resourse/miss.png") no-repeat center center;
+}
