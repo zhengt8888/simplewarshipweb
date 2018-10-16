@@ -28,15 +28,54 @@ var model = {
 
     ships:[
         {
-            locations:["24","34","44"],hits:["","",""]
+            locations:["00","00","00"],hits:["","",""]
         },
         {
-            locations:["06","16","26"],hits:["","",""]
+            locations:["00","00","00"],hits:["","",""]
         },
         {
-            locations:["10","11","12"],hits:["","",""]
+            locations:["00","00","00"],hits:["","",""]
         }
     ],
+    generationShipLocations: function(){
+        var locations;
+        for(var i = 0;i<this.numShips;i++){
+            do{
+                locations = this.generateShip();
+            }while(this.collision(location));
+            this.ships[i].locations = locations;
+        }
+    },
+    generateShip: function(){
+        var direction = Math.floor(Math.random() * 2)   //生成0或1随机
+        var row,col;
+        if(direction === 1){                            //1为水平方向
+            row = Math.floor(Math.random()*this.boardsize);
+            col = Math.floor(Math.random()*(this.boardsize-this.shipLength) );
+        }else{
+            row = Math.floor(Math.random()*(this.boardsize-this.shipLength));
+            col = Math.floor(Math.random()*this.boardsize);
+        }
+        var newShipLocations =[];
+        for(var i=0;i<this.shipLength;i++){
+            if(direction === 1){
+                newShipLocations.push(row + ""+(col+i));    //用""来让+表示拼接
+            }else{
+                newShipLocations.push((row+i) + ""+col);
+            }
+        }
+        return newShipLocations;
+    },
+    collision: function(locations){
+        for(var i = 0;i<this.numShips;i++){
+            var ship = model.ships[i];
+            for(var j=0;j<locations.length;j++){
+                if(ship.locations.indexOf(locations[j])>=0){
+                    return true;
+                }
+            }
+        }
+    },
 
     fire: function(guess){
         for(var i=0; i<this.numShips ; i++){
@@ -119,13 +158,24 @@ controller.processGuess("C0"); */
 function init(){
     var fireButton = document.getElementById("fireButton");
     fireButton.onclick = handleFireButton;
+    var guessInput = document.getElementById("guessInput");
+    guessInput.onkeypress = handleKeyPress;
+
+    model.generationShipLocations();
 }
 
 function handleFireButton(){
     var guessInput = document.getElementById("guessInput");
     var guess = guessInput.value;
     controller.processGuess(guess);
-    guessInput.value = "";              
+    guessInput.value = "";                       //读完数后要清零，便于下次输入        
 }
 
+function handleKeyPress(e){
+    var fireButton = document.getElementById("fireButton");
+    if (e.keyCode === 13){                        //回车键的keyCode是13
+        fireButton.click();
+        return false;
+    }
+}
 window.onload = init;
